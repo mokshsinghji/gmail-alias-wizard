@@ -34,3 +34,6 @@ out/
 
 ### VS Code ###
 .vscode/
+/..bfg-report/
+/..git/
+/..git.bfg-report/
