@@ -37,3 +37,5 @@ out/
 /..bfg-report/
 /..git/
 /..git.bfg-report/
+
+application.yaml
