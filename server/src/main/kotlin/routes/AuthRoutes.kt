@@ -17,7 +17,13 @@ import kotlinx.html.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserInfoResponse(val id: Int, val name: String, val email: String, val googleUserId: String)
+data class UserInfoResponse(
+    val id: Int,
+    val name: String,
+    val email: String,
+    val googleUserId: String,
+    val picture: String?
+)
 
 fun Route.userInfoApiRoute() {
     get("/user/info") {
@@ -30,12 +36,15 @@ fun Route.userInfoApiRoute() {
         val authService: AuthService by call.application.dependencies;
         val user = authService.getUserById(userSession.userId);
         if (user != null) {
-            call.respond(HttpStatusCode.OK, UserInfoResponse(
-                id = user.id.value,
-                name = user.name,
-                email = user.email,
-                googleUserId = user.googleUserId
-            ))
+            call.respond(
+                HttpStatusCode.OK, UserInfoResponse(
+                    id = user.id.value,
+                    name = user.name,
+                    email = user.email,
+                    googleUserId = user.googleUserId,
+                    picture = user.picture
+                )
+            )
         } else {
             call.respondText("User not found", status = HttpStatusCode.NotFound)
         }

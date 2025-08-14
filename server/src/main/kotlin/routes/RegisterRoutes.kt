@@ -7,5 +7,6 @@ import io.ktor.server.routing.routing
 fun Application.registerRoutes() {
     routing {
         registerAuthRoutes()
+        registerAliasRoutes()
     }
 }

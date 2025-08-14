@@ -29,6 +29,12 @@ tasks.withType<ProcessResources> {
 }
 
 dependencies {
+    // for gmail api
+    implementation("com.google.api-client:google-api-client:2.8.0")
+    implementation("com.google.auth:google-auth-library-bom:1.30.1")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
+    implementation("com.google.apis:google-api-services-gmail:v1-rev20230925-2.0.0")
+
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-auth")
     implementation("io.ktor:ktor-client-core")

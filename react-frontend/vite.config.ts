@@ -24,8 +24,12 @@ const config = defineConfig({
             '/api': {
                 target: 'http://localhost:8080',
                 changeOrigin: true,
-                secure: false,
-                rewrite: (path) => path.replace(/^\/api/, ''),
+                secure: false
+            },
+            '/auth': {
+                target: 'http://localhost:8080',
+                changeOrigin: true,
+                secure: false
             }
         }
     }

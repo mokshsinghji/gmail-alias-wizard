@@ -1,39 +1,30 @@
-import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useUser } from "@/hooks/useUser.ts";
+import { useEffect } from "react";
 
 export const Route = createFileRoute('/')({
   component: App,
 })
 
 function App() {
+  const { user, isLoading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user != null) {
+      navigate({
+        to: '/dashboard'
+      });
+    }
+  }, [isLoading, user])
+
   return (
     <div className="text-center">
-      <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
-        <img
-          src={logo}
-          className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"
-          alt="logo"
-        />
-        <p>
-          Edit <code>src/routes/index.tsx</code> and save to reload.
-        </p>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://tanstack.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn TanStack
-        </a>
-      </header>
+      <h1 className="text-4xl font-bold">Welcome to the Gmail Alias Wizard</h1>
+      <p className="mt-4">Please log in to continue</p>
+      <a href="/auth/google/login" className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded">
+        Login With Google
+      </a>
     </div>
   )
 }

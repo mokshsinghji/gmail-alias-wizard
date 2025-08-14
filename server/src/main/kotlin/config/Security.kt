@@ -34,7 +34,7 @@ fun Application.configureSecurity() {
 
     authentication {
         oauth("auth-oauth-google") {
-            urlProvider = { "http://localhost:8080/auth/google/callback" }
+            urlProvider = { "http://localhost:3000/auth/google/callback" }
             providerLookup = {
                 OAuth2ServerSettings(
                     name = "google",
