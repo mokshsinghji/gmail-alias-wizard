@@ -39,3 +39,5 @@ out/
 /..git.bfg-report/
 
 application.yaml
+./data.db
+./data2.db
