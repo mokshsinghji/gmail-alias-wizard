@@ -1,19 +1,19 @@
 import { useAliases } from '@/hooks/useAliases';
 import { useUser } from '@/hooks/useUser';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { aliases, isLoading, isError, addAlias } = useAliases();
+  const { aliases, isLoading, isError, /* addAlias */ } = useAliases();
   const { user, isLoading: isUserLoading, error: userError } = useUser();
   const navigate = useNavigate();
-  const [creatingAlias, setCreatingAlias] = useState(false);
-  const [newAlias, setNewAlias] = useState('');
-  const [newAliasName, setNewAliasName] = useState('');
+  // const [creatingAlias, setCreatingAlias] = useState(false);
+  // const [newAlias, setNewAlias] = useState('');
+  // const [newAliasName, setNewAliasName] = useState('');
 
   useEffect(() => {
     if (!user && !isUserLoading) {
@@ -23,7 +23,7 @@ function RouteComponent() {
       });
     }
 
-    setNewAliasName(user?.name || '');
+    // setNewAliasName(user?.name || '');
   }, [user, isUserLoading])
 
   if (isLoading || isUserLoading) {
@@ -51,7 +51,7 @@ function RouteComponent() {
             )}
           </li>
         ))}
-        <li>
+        {/* <li>
           {!creatingAlias && <button className='bg-blue-500 text-white p-2 rounded' onClick={() => {
             setCreatingAlias(true);
           }}>Add Alias</button>}
@@ -68,7 +68,7 @@ function RouteComponent() {
               }} disabled={addAlias.isPending}>{addAlias.isPending ? 'Creating Alias...' : 'Create Alias'}</button>
             </div>
           )}
-        </li>
+        </li> */}
       </ul>
     )}
   </div>;
