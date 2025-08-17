@@ -11,7 +11,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-
     routing {
         singlePageApplication {
             useResources = true
@@ -24,5 +23,4 @@ fun Application.module() {
     configureSerialization()
     configureFrameworks()
     configureRouting()
-
 }
