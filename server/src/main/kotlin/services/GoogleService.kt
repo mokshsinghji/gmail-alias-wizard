@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 interface GoogleService {
     // Define methods that the GoogleService should implement
     fun getGmailAliases(user: User): List<GmailApiAliasResponse>?
-    fun createGmailAlias(user: User, displayName: String?, emailAlias: String): GmailApiAliasResponse?
+    // fun createGmailAlias(user: User, displayName: String?, emailAlias: String): GmailApiAliasResponse?
 }
 
 @Serializable
@@ -31,7 +31,7 @@ data class GmailApiAliasResponse(
 class GoogleServiceImpl(
     @Property("auth.google.clientId") val clientId: String,
     @Property("auth.google.clientSecret") val clientSecret: String,
-    @Property("auth.google.appPassword") val appPassword: String,
+    // @Property("auth.google.appPassword") val appPassword: String,
 ) : GoogleService {
     override fun getGmailAliases(user: User): List<GmailApiAliasResponse>? {
         // Implement the logic to fetch Gmail aliases for the user
@@ -50,31 +50,32 @@ class GoogleServiceImpl(
             }
     }
 
-    override fun createGmailAlias(user: User, displayName: String?, emailAlias: String): GmailApiAliasResponse? {
-        // Implement the logic to create a Gmail alias for the user
-        // This is a placeholder implementation
-        val gmail = buildGmailService(user)
-
-        return gmail?.users()?.settings()?.sendAs()?.create("me", com.google.api.services.gmail.model.SendAs()
-            .setSendAsEmail(emailAlias)
-            .setDisplayName(displayName).setSmtpMsa(
-                SmtpMsa()
-                    .setHost("smtp.gmail.com")
-                    .setPort(587)
-                    .setSecurityMode("SSL")
-                    .setUsername(user.email)
-                    .setPassword(appPassword)
-            ))
-            ?.execute()?.let {
-                GmailApiAliasResponse(
-                    sendAsEmail = it.sendAsEmail,
-                    displayName = it.displayName,
-                    isDefault = it.isDefault,
-                    replyToAddress = it.replyToAddress,
-                    verificationStatus = it.verificationStatus
-                )
-            }
-    }
+    // doesn't work
+    // override fun createGmailAlias(user: User, displayName: String?, emailAlias: String): GmailApiAliasResponse? {
+    //     // Implement the logic to create a Gmail alias for the user
+    //     // This is a placeholder implementation
+    //     val gmail = buildGmailService(user)
+    //
+    //     return gmail?.users()?.settings()?.sendAs()?.create("me", com.google.api.services.gmail.model.SendAs()
+    //         .setSendAsEmail(emailAlias)
+    //         .setDisplayName(displayName).setSmtpMsa(
+    //             SmtpMsa()
+    //                 .setHost("smtp.gmail.com")
+    //                 .setPort(587)
+    //                 .setSecurityMode("SSL")
+    //                 .setUsername(user.email)
+    //                 .setPassword(appPassword)
+    //         ))
+    //         ?.execute()?.let {
+    //             GmailApiAliasResponse(
+    //                 sendAsEmail = it.sendAsEmail,
+    //                 displayName = it.displayName,
+    //                 isDefault = it.isDefault,
+    //                 replyToAddress = it.replyToAddress,
+    //                 verificationStatus = it.verificationStatus
+    //             )
+    //         }
+    // }
 
     private fun buildGmailService(user: User): Gmail? {
         val transport = NetHttpTransport()

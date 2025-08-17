@@ -37,6 +37,7 @@ out/
 /..bfg-report/
 /..git/
 /..git.bfg-report/
+.kotlin/
 
 application.yaml
 data.db
