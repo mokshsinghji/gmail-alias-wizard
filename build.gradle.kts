@@ -3,6 +3,7 @@ plugins {
     kotlin("multiplatform") version "2.1.10" apply false
     id("io.ktor.plugin") version "3.2.3" apply false
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10" apply false
+    id("org.graalvm.buildtools.native") version "0.9.28" apply false
 }
 
 subprojects {
