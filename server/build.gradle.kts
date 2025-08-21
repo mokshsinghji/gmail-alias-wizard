@@ -59,3 +59,17 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
+
+
+jlink {
+    // ... your other jlink options
+
+    options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages", "--exclude-module", "java.rmi"))
+}
+
+// Or if you are configuring jpackage directly
+jpackage {
+    // ... your other jpackage options
+
+    jlinkOptions.set(listOf("--exclude-module", "java.rmi"))
+}

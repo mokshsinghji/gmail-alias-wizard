@@ -25,6 +25,4 @@ auth:
   google:
     clientId: <YOUR_GOOGLE_CLIENT_ID>
     clientSecret: <YOUR_GOOGLE_CLIENT_SECRET>
-    appPassword: <YOUR_GMAIL_APP_PASSWORD>
-    smtpUsername: <YOUR_GMAIL_ADDRESS>
 ```
