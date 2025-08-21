@@ -1,0 +1,139 @@
+name: Build Native Executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            binary: gmail-alias-wizard
+          - os: windows-latest
+            platform: windows
+            binary: gmail-alias-wizard.exe
+          - os: macos-latest
+            platform: macos
+            binary: gmail-alias-wizard
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup GraalVM
+      uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '17'
+        distribution: 'graalvm'
+        components: 'native-image'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    - name: Grant execute permission for gradlew
+      if: runner.os != 'Windows'
+      run: chmod +x gradlew
+    
+    - name: Build with Gradle (skip tests)
+      run: ./gradlew :server:build -x test
+    
+    - name: Build Native Image
+      run: ./gradlew :server:nativeCompile
+    
+    - name: Create Distribution (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir -p dist
+        cp server/build/native/nativeCompile/gmail-alias-wizard dist/
+        
+        # Create shell launcher script
+        cat > dist/gmail-alias-wizard.sh << 'EOF'
+        #!/bin/bash
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        EXECUTABLE="$SCRIPT_DIR/gmail-alias-wizard"
+        
+        if [ "$1" = "setup" ] || [ "$1" = "--setup" ]; then
+            "$EXECUTABLE" --setup
+        elif [ "$1" = "help" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+            echo "Gmail Alias Wizard - Email Alias Management"
+            echo "Usage: $0 [setup|help]"
+        else
+            "$EXECUTABLE" "$@"
+        fi
+        EOF
+        
+        chmod +x dist/gmail-alias-wizard.sh
+        
+        # Create README
+        cat > dist/README.txt << 'EOF'
+        Gmail Alias Wizard - Native Distribution
+        
+        Quick Start:
+        1. Run setup: ./gmail-alias-wizard.sh setup
+        2. Edit application.yaml with your credentials
+        3. Start server: ./gmail-alias-wizard.sh
+        4. Open http://localhost:8080
+        EOF
+    
+    - name: Create Distribution (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        mkdir dist
+        copy server\build\native\nativeCompile\gmail-alias-wizard.exe dist\
+        
+        # Create batch launcher script
+        echo '@echo off' > dist\gmail-alias-wizard.bat
+        echo 'set SCRIPT_DIR=%~dp0' >> dist\gmail-alias-wizard.bat
+        echo 'set EXECUTABLE=%SCRIPT_DIR%gmail-alias-wizard.exe' >> dist\gmail-alias-wizard.bat
+        echo 'if "%1"=="setup" "%EXECUTABLE%" --setup' >> dist\gmail-alias-wizard.bat
+        echo 'if "%1"=="help" echo Usage: gmail-alias-wizard.bat [setup|help]' >> dist\gmail-alias-wizard.bat
+        echo 'if "%1"=="" "%EXECUTABLE%"' >> dist\gmail-alias-wizard.bat
+        
+        # Create README
+        echo Gmail Alias Wizard - Native Distribution > dist\README.txt
+        echo Quick Start: >> dist\README.txt
+        echo 1. Run setup: gmail-alias-wizard.bat setup >> dist\README.txt
+        echo 2. Edit application.yaml with your credentials >> dist\README.txt
+        echo 3. Start server: gmail-alias-wizard.bat >> dist\README.txt
+        echo 4. Open http://localhost:8080 >> dist\README.txt
+      shell: cmd
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: gmail-alias-wizard-${{ matrix.platform }}
+        path: dist/
+    
+    - name: Create Release Archive
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        if [ "${{ runner.os }}" = "Windows" ]; then
+          7z a gmail-alias-wizard-${{ matrix.platform }}.zip dist/*
+        else
+          tar -czf gmail-alias-wizard-${{ matrix.platform }}.tar.gz -C dist .
+        fi
+      shell: bash
+    
+    - name: Upload to Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gmail-alias-wizard-${{ matrix.platform }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
+        asset_name: gmail-alias-wizard-${{ matrix.platform }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}
+        asset_content_type: application/${{ runner.os == 'Windows' && 'zip' || 'gzip' }}

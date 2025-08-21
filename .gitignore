@@ -42,3 +42,9 @@ out/
 application.yaml
 data.db
 data2.db
+
+# Distribution and native build artifacts
+dist/
+gmail-alias-wizard-*.tar.gz
+gmail-alias-wizard-*.zip
+test-application.yaml
