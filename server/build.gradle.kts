@@ -9,10 +9,30 @@ plugins {
     kotlin("jvm") version "2.1.10"
     id("io.ktor.plugin") version "3.2.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
+    id("org.graalvm.buildtools.native")
 }
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass = "com.moksh.ApplicationKt"
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            fallback.set(false)
+            verbose.set(true)
+            
+            buildArgs.add("--initialize-at-build-time=ch.qos.logback")
+            buildArgs.add("--initialize-at-build-time=org.slf4j.LoggerFactory")
+            buildArgs.add("--initialize-at-build-time=org.slf4j.impl.StaticLoggerBinder")
+            buildArgs.add("--initialize-at-run-time=io.ktor,kotlin")
+            buildArgs.add("-H:+InstallExitHandlers")
+            buildArgs.add("-H:+ReportUnsupportedElementsAtRuntime")
+            buildArgs.add("-H:+ReportExceptionStackTraces")
+            
+            imageName.set("gmail-alias-wizard")
+        }
+    }
 }
 
 tasks.withType<ProcessResources> {

@@ -1,0 +1,23 @@
+ktor:
+  application:
+    modules:
+      - com.moksh.ApplicationKt.module
+    dependencies:
+      - com.moksh.config.DatabaseConnectionKt.provideDatabaseConnection
+      - com.moksh.services.AuthServiceImpl
+      - com.moksh.services.GoogleServiceImpl
+  deployment:
+    port: 8080
+
+database:
+  url: jdbc:sqlite:./data.db
+
+auth:
+  sessions:
+    encryptKey: 1234567890abcdef1234567890abcdef
+    signKey: 1234567890abcdef1234567890abcdef
+  google:
+    clientId: test_client_id
+    clientSecret: test_client_secret
+    appPassword: test_app_password
+    smtpUsername: test@gmail.com
